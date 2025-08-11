@@ -19,22 +19,28 @@ interface NotesClientProps {
   };
   initialQuery: string;
   initialPage: number;
+  initialCategory?: string;
 }
 
 export default function NotesClient({
   initialData,
   initialQuery,
   initialPage,
+  initialCategory,
 }: NotesClientProps) {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [query, setQuery] = useState(initialQuery);
+  const [category] = useState(initialCategory);
 
   const updateSearchQuery = useDebouncedCallback((newQuery: string) => {
     setQuery(newQuery);
     setCurrentPage(1);
-    router.push(`/notes?query=${newQuery}&page=1`);
+    const tagPart = category
+      ? `/notes/filter/${category}`
+      : "/notes/filter/All";
+    router.push(`${tagPart}?query=${newQuery}&page=1`);
   }, 300);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,15 +48,18 @@ export default function NotesClient({
   const closeModal = () => setIsModalOpen(false);
 
   const { data, isSuccess, isLoading, isError } = useQuery({
-    queryKey: ["notes", query, currentPage],
-    queryFn: () => fetchNotes(query, currentPage),
+    queryKey: ["notes", query, currentPage, category],
+    queryFn: () => fetchNotes(query, currentPage, 12, category),
     initialData,
     placeholderData: keepPreviousData,
   });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    router.push(`/notes?query=${query}&page=${page}`);
+    const tagPart = category
+      ? `/notes/filter/${category}`
+      : "/notes/filter/All";
+    router.push(`${tagPart}?query=${query}&page=${page}`);
   };
 
   return (

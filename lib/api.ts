@@ -13,15 +13,16 @@ interface NoteResponse {
 
 export async function fetchNotes(
   query: string,
-
   page: number,
-  perPage = 12
+  perPage = 12,
+  tag?: string
 ): Promise<NoteResponse> {
   const options = {
     params: {
       ...(query.trim() !== "" && { search: query }),
       page,
       perPage,
+      tag,
     },
     headers: {
       Authorization: `Bearer ${myKey}`,
