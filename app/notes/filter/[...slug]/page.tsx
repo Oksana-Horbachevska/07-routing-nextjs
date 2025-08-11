@@ -2,7 +2,7 @@ import NotesClient from "./Notes.client";
 import { fetchNotes } from "@/lib/api";
 
 type Props = {
-  params: { slug: string[] };
+  params: Promise<{ slug: string[] }>;
 };
 
 const NotesByCategory = async ({ params }: Props) => {
