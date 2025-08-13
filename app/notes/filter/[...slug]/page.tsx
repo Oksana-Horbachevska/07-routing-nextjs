@@ -6,19 +6,10 @@ type Props = {
 };
 
 const NotesByCategory = async ({ params }: Props) => {
-  const initialQuery = "";
-  const initialPage = 1;
   const { slug } = await params;
   const category = slug[0] === "All" ? undefined : slug[0];
-  const initialData = await fetchNotes(initialQuery, initialPage, 12, category);
-  return (
-    <NotesClient
-      initialData={initialData}
-      initialQuery={initialQuery}
-      initialPage={initialPage}
-      initialCategory={category}
-    />
-  );
+  const initialData = await fetchNotes("", 1, 12, category);
+  return <NotesClient initialData={initialData} category={category} />;
 };
 
 export default NotesByCategory;

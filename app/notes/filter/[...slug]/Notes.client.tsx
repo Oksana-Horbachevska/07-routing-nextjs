@@ -17,22 +17,18 @@ interface NotesClientProps {
     notes: Note[];
     totalPages: number;
   };
-  initialQuery: string;
-  initialPage: number;
-  initialCategory?: string;
+
+  category?: string;
 }
 
 export default function NotesClient({
   initialData,
-  initialQuery,
-  initialPage,
-  initialCategory,
+  category,
 }: NotesClientProps) {
   const router = useRouter();
 
-  const [currentPage, setCurrentPage] = useState(initialPage);
-  const [query, setQuery] = useState(initialQuery);
-  const [category] = useState(initialCategory);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState("");
 
   const updateSearchQuery = useDebouncedCallback((newQuery: string) => {
     setQuery(newQuery);
