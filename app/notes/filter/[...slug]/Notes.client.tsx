@@ -18,24 +18,21 @@ interface NotesClientProps {
     totalPages: number;
   };
 
-  category?: string;
+  tag?: string;
 }
 
-export default function NotesClient({
-  initialData,
-  category,
-}: NotesClientProps) {
+export default function NotesClient({ initialData, tag }: NotesClientProps) {
   const router = useRouter();
 
+  const [inputValue, setInputValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [query, setQuery] = useState("");
+  const limit = 12;
 
   const updateSearchQuery = useDebouncedCallback((newQuery: string) => {
     setQuery(newQuery);
     setCurrentPage(1);
-    const tagPart = category
-      ? `/notes/filter/${category}`
-      : "/notes/filter/All";
+    const tagPart = tag ? `/notes/filter/${tag}` : "/notes/filter/All";
     router.push(`${tagPart}?query=${newQuery}&page=1`);
   }, 300);
 
@@ -44,24 +41,28 @@ export default function NotesClient({
   const closeModal = () => setIsModalOpen(false);
 
   const { data, isSuccess, isLoading, isError } = useQuery({
-    queryKey: ["notes", query, currentPage, category],
-    queryFn: () => fetchNotes(query, currentPage, 12, category),
+    queryKey: ["notes", query, currentPage, limit, tag],
+    queryFn: () => fetchNotes(query, currentPage, limit, tag),
     initialData,
     placeholderData: keepPreviousData,
   });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    const tagPart = category
-      ? `/notes/filter/${category}`
-      : "/notes/filter/All";
+    const tagPart = tag ? `/notes/filter/${tag}` : "/notes/filter/All";
     router.push(`${tagPart}?query=${query}&page=${page}`);
   };
 
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox onSearch={updateSearchQuery} value={query} />
+        <SearchBox
+          onSearch={(val) => {
+            setInputValue(val);
+            updateSearchQuery(val);
+          }}
+          value={inputValue}
+        />
         {isSuccess && data.totalPages > 1 && (
           <Pagination
             totalPages={data.totalPages}
